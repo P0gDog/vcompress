@@ -31,7 +31,27 @@ vcompress example.mp4
 Compressed files are output as example-compressed.mp4
 ## Installation
 
-Currently, vcompress only supports Arch.
+### Via crates.io
+
+Requires the Rust toolchain and `ffmpeg` installed on your system.
+
+    cargo install vcompress
+
+This puts the `vcompress` binary in `~/.cargo/bin`. Please make sure that's on your `$PATH`
+(`export PATH="$HOME/.cargo/bin:$PATH"` in your `.bashrc`/`.zshrc` if it isn't already).
+
+Arch:
+
+    sudo pacman -S ffmpeg
+
+Debian/Ubuntu:
+
+    sudo apt install ffmpeg
+
+macOS:
+
+    brew install ffmpeg
+### AUR
 
 AUR uploads are currently suspended Arch-wide due to a security incident.
 Until it reopens, please build manually:
