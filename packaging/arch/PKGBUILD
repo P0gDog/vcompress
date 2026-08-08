@@ -1,0 +1,28 @@
+# Maintainer: pogdog <pogdog@pogdog.org>
+pkgname=vcompress
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Easily compress a video to any file size using ffmpeg encoding"
+arch=('x86_64')
+url="https://github.com/P0gDog/vcompress"
+license=('MIT')
+depends=('ffmpeg' 'gcc-libs')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/P0gDog/vcompress/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('04aa213710309e2593018bccb6ceaeef1403931abffb00f2d4600aa3e8e918d3')
+
+prepare() {
+    cd "$pkgname-$pkgver"
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    cd "$pkgname-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    cargo build --frozen --release
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+}
