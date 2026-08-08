@@ -2,7 +2,12 @@
 name = "vcompress"
 version = "0.1.0"
 edition = "2024"
+description = "Compress a video to a target file size using two-pass ffmpeg encoding"
+license = "MIT"
+repository = "https://github.com/P0gDog/vcompress"
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 anyhow = "1"
+
