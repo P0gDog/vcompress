@@ -41,6 +41,9 @@ fn get_duration_secs(input: &PathBuf) -> Result<f64> {
 
 
 
+fn null_device() -> &'static str {
+    if cfg!(windows) { "NUL" } else { "/dev/null" }
+}
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -63,7 +66,7 @@ fn main() -> Result<()> {
         .args(["-y", "-i"]).arg(&args.input)
         .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"),
                "-pass", "1", "-an", "-f", "mp4"])
-        .arg("/dev/null")
+        .arg(null_device())
         .status()
         .context("ffmpeg pass 1 failed to run")?;
     if !status.success() { bail!("ffmpeg pass 1 exited with an error"); }
@@ -73,7 +76,7 @@ fn main() -> Result<()> {
         .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"),
                "-pass", "2", "-c:a", "aac", "-b:a", &format!("{}k", args.audio_kbps)])
         .arg(&output_path)
-        .status()
+.status()
         .context("ffmpeg pass 2 failed to run")?;
     if !status.success() { bail!("ffmpeg pass 2 exited with an error"); }
 
