@@ -1,7 +1,9 @@
 use anyhow::{bail, Context, Result};
 use clap::Parser;
+use indicatif::{ProgressBar, ProgressStyle};
+use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 //comp to  target size
 
@@ -49,6 +51,55 @@ fn null_device() -> &'static str {
     if cfg!(windows) { "NUL" } else { "/dev/null" }
 }
 
+/// progress bar :3
+fn run_ffmpeg_with_progress(mut cmd: Command, duration: f64, label: &str) -> Result<()> {
+    cmd.args(["-progress", "pipe:1", "-nostats", "-loglevel", "error"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+
+    let mut child = cmd.spawn().with_context(|| format!("failed to start ffmpeg ({label})"))?;
+
+    let stderr = child.stderr.take().expect("stderr was piped");
+    let stderr_handle = std::thread::spawn(move || {
+        let mut buf = String::new();
+        let _ = BufReader::new(stderr).read_to_string(&mut buf);
+        buf
+    });
+
+    let pb = ProgressBar::new((duration * 1000.0).round() as u64);
+    pb.set_style(
+        ProgressStyle::with_template("{msg} [{bar:40.cyan/blue}] {percent:>3}% ({elapsed_precise})")
+            .unwrap()
+            .progress_chars("=> "),
+    );
+    pb.set_message(label.to_string());
+
+    let stdout = child.stdout.take().expect("stdout was piped");
+    for line in BufReader::new(stdout).lines().map_while(Result::ok) {
+        if let Some(value) = line.strip_prefix("out_time_us=") {
+            if let Ok(us) = value.trim().parse::<i64>() {
+                let secs = (us.max(0) as f64 / 1_000_000.0).min(duration);
+                pb.set_position((secs * 1000.0).round() as u64);
+            }
+        } else if line.starts_with("progress=end") {
+            pb.set_position(pb.length().unwrap_or(0));
+        }
+    }
+
+    let status = child.wait().context("failed to wait on ffmpeg")?;
+    pb.finish_and_clear();
+
+    let stderr_output = stderr_handle.join().unwrap_or_default();
+    if !status.success() {
+        if !stderr_output.trim().is_empty() {
+            eprintln!("{}", stderr_output.trim());
+        }
+        bail!("ffmpeg {label} exited with an error");
+    }
+
+    Ok(())
+}
+
 fn main() -> Result<()> {
     let args = Args::parse();
 
@@ -90,31 +141,31 @@ fn main() -> Result<()> {
         bail!("output path is the same as the input path ({}); choose a different output", output_path.display());
     }
 
-    let pass1 = Command::new("ffmpeg") // if ffmpeg does it, might as well use it.. despite how it
-                                        // makes this entire project just a wrapper for it
+    let mut pass1_cmd = Command::new("ffmpeg"); // if ffmpeg does it, might as well use it.. despite how it
+                                                 // makes this entire project just a wrapper for it
+    pass1_cmd
         .args(["-y", "-i"]).arg(&args.input)
         .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"),
                "-pass", "1", "-an", "-f", "mp4"])
-        .arg(null_device())
-        .status()
-        .context("ffmpeg pass 1 failed to run");
+        .arg(null_device());
 
-    let pass2 = match &pass1 {
-        Ok(status) if status.success() => Command::new("ffmpeg")
-            .args(["-y", "-i"]).arg(&args.input)
-            .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"),
-                   "-pass", "2", "-c:a", "aac", "-b:a", &format!("{}k", args.audio_kbps)])
-            .arg(&output_path)
-            .status()
-            .context("ffmpeg pass 2 failed to run"),
-        _ => Ok(std::process::ExitStatus::default()),
-    };
+    let mut pass2_cmd = Command::new("ffmpeg");
+    pass2_cmd
+        .args(["-y", "-i"]).arg(&args.input)
+        .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"),
+               "-pass", "2", "-c:a", "aac", "-b:a", &format!("{}k", args.audio_kbps)])
+        .arg(&output_path);
+
+    let result = (|| -> Result<()> {
+        run_ffmpeg_with_progress(pass1_cmd, duration, "pass 1/2")?;
+        run_ffmpeg_with_progress(pass2_cmd, duration, "pass 2/2")?;
+        Ok(())
+    })();
 
     let _ = std::fs::remove_file("ffmpeg2pass-0.log");
     let _ = std::fs::remove_file("ffmpeg2pass-0.log.mbtree");
 
-    if !pass1?.success() { bail!("ffmpeg pass 1 exited with an error"); }
-    if !pass2?.success() { bail!("ffmpeg pass 2 exited with an error"); }
+    result?;
 
     println!("Wrote {}", output_path.display());
     Ok(())

@@ -10,4 +10,5 @@ readme = "README.md"
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 anyhow = "1"
+indicatif = "0.17"
 
