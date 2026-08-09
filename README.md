@@ -53,7 +53,7 @@ macOS:
     brew install ffmpeg
 
 ### Windows
-In PowerShell, run:
+1: In PowerShell, run:
 
     cargo install vcompress
     winget install ffmpeg
@@ -61,8 +61,13 @@ In PowerShell, run:
 `cargo install` puts the binary in `%USERPROFILE%\.cargo\bin`, which the Rust
 installer adds to `PATH` automatically.
 
-No Rust toolchain? Grab `vcompress.exe` directly from the
+2: No Rust toolchain? Grab `vcompress.exe` directly from the
 [latest release](https://github.com/P0gDog/vcompress/releases/latest) instead.
+Then, in the same directory, run
+```
+vcompress.exe target.mp4
+```
+3: Finally, install a Linux distro to make your life easier and to free yourself from Microsoft. I like [Arch.](archlinux.org/download/) 
 ### AUR
 
 AUR uploads are currently suspended Arch-wide due to a security incident.
