@@ -1,6 +1,6 @@
 [package]
 name = "vcompress"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 description = "Compress a video to a target file size using two-pass ffmpeg encoding"
 license = "MIT"
