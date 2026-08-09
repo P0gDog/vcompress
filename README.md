@@ -30,7 +30,7 @@ vcompress example.mp4
 ```
 Compressed files are output as example-compressed.mp4
 ## Installation
-
+<small>Now Supports Windows!</small>
 ### Via crates.io
 
 Requires the Rust toolchain and `ffmpeg` installed on your system.
@@ -51,6 +51,18 @@ Debian/Ubuntu:
 macOS:
 
     brew install ffmpeg
+
+### Windows
+In PowerShell, run:
+
+    cargo install vcompress
+    winget install ffmpeg
+
+`cargo install` puts the binary in `%USERPROFILE%\.cargo\bin`, which the Rust
+installer adds to `PATH` automatically.
+
+No Rust toolchain? Grab `vcompress.exe` directly from the
+[latest release](https://github.com/P0gDog/vcompress/releases/latest) instead.
 ### AUR
 
 AUR uploads are currently suspended Arch-wide due to a security incident.
