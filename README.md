@@ -35,9 +35,10 @@ Compressed files are output as example-compressed.mp4
 ### Precompiled
 Take a look at the [latest release](https://github.com/P0gDog/vcompress/releases/latest)
 to see if your operating system is supported. 
-Once downloaded, run the tool from the command line in the same directory using 
+Once downloaded, run the tool from the command line in the same directory using the following, replacing the binary with your specific version. 
 
-    vcompress target.mp4
+    chmod +x vcompress-linux-x86_64
+    ./vcompress-linux-x86_64 input.mp4
 
     
 ### Via crates.io **(Recommended)**
