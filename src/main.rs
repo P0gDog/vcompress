@@ -24,6 +24,10 @@ struct Args {
     /// audio bitrate
     #[arg(short = 'a', long, default_value_t = 128)]
     audio_kbps: u32,
+
+    /// strip audio entirely
+    #[arg(long)]
+    no_audio: bool,
 }
 
 
@@ -106,7 +110,7 @@ fn main() -> Result<()> {
     if args.target_mb <= 0.0 {
         bail!("--target-mb must be positive (got {})", args.target_mb);
     }
-    if args.audio_kbps == 0 {
+    if args.audio_kbps == 0 && !args.no_audio {
         bail!("--audio-kbps must be positive (got 0)");
     }
 
@@ -117,7 +121,7 @@ fn main() -> Result<()> {
     println!("duration: {:.2}s", duration);
 
     let target_bits = args.target_mb * 8.0 * 1024.0 * 1024.0 * 0.98; // saftey margin (likely not needed but still ig)
-    let audio_bits = args.audio_kbps as f64 * 1000.0 * duration;
+    let audio_bits = if args.no_audio { 0.0 } else { args.audio_kbps as f64 * 1000.0 * duration };
     if audio_bits >= target_bits {
         bail!(
             "audio alone (~{:.1}MB at {}kbps) leaves no room in a {:.1}MB target; lower --audio-kbps or raise --target-mb",
@@ -152,9 +156,13 @@ fn main() -> Result<()> {
     let mut pass2_cmd = Command::new("ffmpeg");
     pass2_cmd
         .args(["-y", "-i"]).arg(&args.input)
-        .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"),
-               "-pass", "2", "-c:a", "aac", "-b:a", &format!("{}k", args.audio_kbps)])
-        .arg(&output_path);
+        .args(["-c:v", "libx264", "-b:v", &format!("{video_kbps}k"), "-pass", "2"]);
+    if args.no_audio {
+        pass2_cmd.arg("-an");
+    } else {
+        pass2_cmd.args(["-c:a", "aac", "-b:a", &format!("{}k", args.audio_kbps)]);
+    }
+    pass2_cmd.arg(&output_path);
 
     let result = (|| -> Result<()> {
         run_ffmpeg_with_progress(pass1_cmd, duration, "pass 1/2")?;
