@@ -21,8 +21,9 @@ A simple command line video compression utility
   -o, --output <OUTPUT>          output
   -t, --target-mb <TARGET_MB>    targ. size [default: 9]
   -a, --audio-kbps <AUDIO_KBPS>  audio bitrate [default: 128]
+      --no-audio                 strip audio entirely
   -h, --help                     Print help
-  -V, --version                  Print version
+  -V, --version   
 ```
 Example use:
 ```
