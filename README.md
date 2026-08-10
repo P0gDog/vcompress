@@ -1,7 +1,7 @@
 
 # vcompress
 
-A simple command line video compression utillity
+A simple command line video compression utility
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 ![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)
@@ -21,8 +21,9 @@ A simple command line video compression utillity
   -o, --output <OUTPUT>          output
   -t, --target-mb <TARGET_MB>    targ. size [default: 9]
   -a, --audio-kbps <AUDIO_KBPS>  audio bitrate [default: 128]
+      --no-audio                 strip audio entirely
   -h, --help                     Print help
-  -V, --version                  Print version
+  -V, --version   
 ```
 Example use:
 ```
@@ -31,7 +32,16 @@ vcompress example.mp4
 Compressed files are output as example-compressed.mp4
 ## Installation
 <small>Now Supports Windows!</small>
-### Via crates.io
+### Precompiled
+Take a look at the [latest release](https://github.com/P0gDog/vcompress/releases/latest)
+to see if your operating system is supported. 
+Once downloaded, run the tool from the command line in the same directory using the following, replacing the binary with your specific version. 
+
+    chmod +x vcompress-linux-x86_64
+    ./vcompress-linux-x86_64 input.mp4
+
+    
+### Via crates.io **(Recommended)**
 
 Requires the Rust toolchain and `ffmpeg` installed on your system.
 
@@ -64,8 +74,8 @@ No Rust toolchain? Grab `vcompress.exe` directly from the
 
     vcompress.exe target.mp4
 
-Then, I reccommend you get around to installing a linux distro like [Arch](https://archlinux.org/download/).
-### AUR
+Then, I recommend you get around to installing a linux distro like [Arch](https://archlinux.org/download/).
+### AUR (Arch only)
 
 AUR uploads are currently suspended Arch-wide due to a security incident.
 Until it reopens, please build manually:
