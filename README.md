@@ -1,7 +1,7 @@
 
 # vcompress
 
-A simple command line video compression utillity
+A simple command line video compression utility
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 ![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)
@@ -39,7 +39,7 @@ Once downloaded, run the tool from the command line in the same directory using
     vcompress target.mp4
 
     
-### Via crates.io **(Reccommended)**
+### Via crates.io **(Recommended)**
 
 Requires the Rust toolchain and `ffmpeg` installed on your system.
 
@@ -72,8 +72,8 @@ No Rust toolchain? Grab `vcompress.exe` directly from the
 
     vcompress.exe target.mp4
 
-Then, I reccommend you get around to installing a linux distro like [Arch](https://archlinux.org/download/).
-### AUR
+Then, I recommend you get around to installing a linux distro like [Arch](https://archlinux.org/download/).
+### AUR (Arch only)
 
 AUR uploads are currently suspended Arch-wide due to a security incident.
 Until it reopens, please build manually:
