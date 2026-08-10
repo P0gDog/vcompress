@@ -1,6 +1,6 @@
 # Maintainer: pogdog <pogdog@pogdog.org>
 pkgname=vcompress
-pkgver=0.1.6
+pkgver=0.1.7
 pkgrel=1
 pkgdesc="Easily compress a video to any file size using ffmpeg encoding"
 arch=('x86_64')
