@@ -31,7 +31,15 @@ vcompress example.mp4
 Compressed files are output as example-compressed.mp4
 ## Installation
 <small>Now Supports Windows!</small>
-### Via crates.io
+### Precompiled
+Take a look at the [latest release](https://github.com/P0gDog/vcompress/releases/latest)
+to see if your operating system is supported. 
+Once downloaded, run the tool from the command line in the same directory using 
+
+    vcompress target.mp4
+
+    
+### Via crates.io **(Reccommended)**
 
 Requires the Rust toolchain and `ffmpeg` installed on your system.
 
